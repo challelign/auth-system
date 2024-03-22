@@ -5,6 +5,8 @@ import { RegisterSchema } from "@/schemas";
 import { db } from "@/lib/db";
 import bcryptjs from "bcryptjs";
 import { getUserByEmail } from "@/data/user";
+import { generateVerificationToken } from "@/lib/token";
+import { sendVerificationEmail } from "@/lib/mail";
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
 	console.log("values", values);
@@ -26,8 +28,18 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 			password: hashPassword,
 		},
 	});
+	// start  Verified email to login
+	//Start You can comment this to register user without email verification
 
-	// 	TODO: SEND EMAIL VERIFICATION
+	const verificationToken = await generateVerificationToken(email);
+	// 	   SEND EMAIL VERIFICATION
+	await sendVerificationEmail(
+		verificationToken.email!,
+		verificationToken.token!
+	);
+	//End You can comment this to register user without email verification
 
-	return { success: "User created" };
+	return { success: "Confirmation email sent!" };
+
+	// return { success: "User created" };
 };

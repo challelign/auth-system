@@ -31,6 +31,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 	// start  Verified email to login
 	//Start You can comment this to register user without email verification
 
+	// call token form lib token.ts
 	const verificationToken = await generateVerificationToken(email);
 	// 	   SEND EMAIL VERIFICATION
 	await sendVerificationEmail(

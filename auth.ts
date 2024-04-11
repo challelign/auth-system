@@ -4,6 +4,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "./lib/db";
 import { getUserById } from "./data/user";
 import { UserRole } from "@prisma/client";
+import { getTwoFactorConfirmationByUserId } from "./data/two-factor-confirmation";
 
 export const {
 	handlers: { GET, POST },
@@ -37,6 +38,20 @@ export const {
 			if (!existingUser?.emailVerified) {
 				return false;
 			}
+			// 2FA
+			if (existingUser.isTwoFactorEnabled) {
+				const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
+					existingUser.id
+				);
+				// console.log("[twoFactorConfirmation]", { twoFactorConfirmation });
+				if (!twoFactorConfirmation) {
+					return false;
+				}
+				// Delete two factor confirmation for next sign in
+				await db.twoFactorConfirmation.delete({
+					where: { id: twoFactorConfirmation.id },
+				});
+			}
 			return true;
 		},
 		//End Email verification You can comment this to skip verification
@@ -56,6 +71,15 @@ export const {
 				// session.user.role = token.role as "ADMIN" | "USER" | "EDITOR";
 				session.user.role = token.role as UserRole;
 			}
+
+			if (session.user) {
+				session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;
+			}
+
+			if (session.user) {
+				session.user.name = token.name;
+				session.user.email = token.email!;
+			}
 			return session;
 		},
 		async jwt({ token }) {
@@ -68,10 +92,15 @@ export const {
 			if (!existingUser) {
 				return null;
 			}
+
+			// to update name , email and role every time to sync
+			token.name = existingUser.name;
+			token.email = existingUser.email;
 			/**
 			 * Add any field to the token from your db
 			 */
 			token.role = existingUser.role;
+			token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
 			return token;
 		},
 	},

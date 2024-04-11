@@ -40,3 +40,21 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
 		return { error: `res.status(400).json(error)` };
 	}
 };
+
+export const sendTwoFactorTokenEmail = async (email: string, token: string) => {
+	const { data, error } = await resend.emails.send({
+		from: "Auth-system <onboarding@resend.dev>",
+		to: email,
+		subject: "2FA Code",
+		// html: `<p> Click <a href="${confirmLink}">here</a>to reset password</p>`,
+		html: `<p>Dear User,</p>
+           <p>We have received a request to get Two Factor Authentication. To proceed, please copy the 2FA Code below:</p>
+           <p style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">${token}</p>
+           <p>If you did not request a password reset, please ignore this email.</p>
+           <p>Thank you,</p>
+           <p>The Auth-system Team</p>`,
+	});
+	if (error) {
+		return { error: `res.status(400).json(error)` };
+	}
+};

@@ -5,6 +5,7 @@ import { db } from "./lib/db";
 import { getUserById } from "./data/user";
 import { UserRole } from "@prisma/client";
 import { getTwoFactorConfirmationByUserId } from "./data/two-factor-confirmation";
+import { getAccountByUserId } from "./data/account";
 
 export const {
 	handlers: { GET, POST },
@@ -79,6 +80,7 @@ export const {
 			if (session.user) {
 				session.user.name = token.name;
 				session.user.email = token.email!;
+				session.user.isOAuth = token.isOAuth as boolean;
 			}
 			return session;
 		},
@@ -86,13 +88,14 @@ export const {
 			if (!token.sub) {
 				return null;
 			}
-			// console.log({ token });
+			console.log({ token });
 
 			const existingUser = await getUserById(token.sub); //sub is the id from the token
 			if (!existingUser) {
 				return null;
 			}
-
+			const existingAccount = await getAccountByUserId(existingUser.id);
+			token.isOAuth = !!existingAccount;
 			// to update name , email and role every time to sync
 			token.name = existingUser.name;
 			token.email = existingUser.email;

@@ -9,14 +9,14 @@ const Navbar = () => {
 	const pathname = usePathname();
 	return (
 		<nav
-			className="flex flex-wrap items-center
+			className="border-b-2 flex flex-wrap items-center sticky top-0
         justify-between
         w-full
         p-4
         sm:p-2
      shadow-sm
-        text-lg text-gray-700
-        bg-secondary"
+        text-lg text-gray-700 
+		bg-secondary"
 		>
 			<div className="flex gap-x-2  ">
 				<Button

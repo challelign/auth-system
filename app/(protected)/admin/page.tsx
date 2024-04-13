@@ -38,6 +38,20 @@ const AdminPage = () => {
 			<CardContent className="space-y-4">
 				<RoleGate allowedRole={UserRole.ADMIN}>
 					<FormSuccess message="Your are allowed to access this content" />
+					<div className="flex border p-3">
+						<p className="text-justify">
+							Security researchers stumbled upon a long-lasting cryptojacking
+							saga called “EleKtra-Leak.” In this cyber odyssey, mischievous
+							culprits clone public GitHub repositories, making off with exposed
+							AWS credentials. Specifically, key pairs are used to access the
+							victim’s AWS accounts. The “clone and exploit” happens within
+							minutes of an unaware victim accidentally posting a key pair. They
+							then unleash a legion of Amazon Elastic Compute Cloud (EC2)
+							instances to mine the cryptocurrency Monero. Researchers witnessed
+							a staggering 474 miners controlled by what they charmingly call
+							“potentially actor-controlled EC2 instances.”
+						</p>
+					</div>
 				</RoleGate>
 
 				<div className="flex flex-row items-center justify-between rounded-lg p-3 border shadow-md">

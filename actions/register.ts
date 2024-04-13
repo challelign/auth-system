@@ -7,6 +7,7 @@ import bcryptjs from "bcryptjs";
 import { getUserByEmail } from "@/data/user";
 import { generateVerificationToken } from "@/lib/token";
 import { sendVerificationEmail } from "@/lib/mail";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
 	console.log("values", values);
@@ -21,13 +22,27 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 		return { error: "Email already in use!" };
 	}
 
-	await db.user.create({
-		data: {
-			name,
-			email,
-			password: hashPassword,
-		},
-	});
+	try {
+		await db.user.create({
+			data: {
+				name,
+				email,
+				password: hashPassword,
+			},
+		});
+	} catch (error) {
+		if (
+			error instanceof PrismaClientKnownRequestError &&
+			error.code === "P2021"
+		) {
+			return {
+				error: "The table  does not exist in the current database.",
+			};
+		} else {
+			return { error: "Something went wrong" };
+		}
+	}
+
 	// start  Verified email to login
 	//Start You can comment this to register user without email verification
 

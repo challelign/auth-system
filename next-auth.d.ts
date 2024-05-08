@@ -6,8 +6,8 @@ import NextAuth, { DefaultSession } from "next-auth";
  */
 export type ExtendedUser = DefaultSession["user"] & {
 	// role: "ADMIN" | "USER" | "EDITOR";
-	id: string;
-	customField: string;
+	// id: string;
+	// customField: string;
 	role: UserRole;
 	isTwoFactorEnabled: boolean;
 	isOAuth: boolean;

@@ -1,5 +1,5 @@
 import { UserRole } from "@prisma/client";
-import NextAuth, { DefaultSession } from "next-auth";
+import NextAuth, { type DefaultSession } from "next-auth";
 
 /**
  * Add any custom field here from your database or static name
